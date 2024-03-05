@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: false
+      }
+    }
+  </script>
+  <style>
+    /*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+    *,
+    ::before,
+    ::after {
+      box-sizing: border-box;
+      /* 1 */
+      border-width: 0;
+      /* 2 */
+      border-style: solid;
+      /* 2 */
+      border-color: theme('borderColor.DEFAULT', currentColor);
+      /* 2 */
+    }
+
+    ::before,
+    ::after {
+      --tw-content: '';
+    }
+
+    /*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+*/
+
+    html {
+      line-height: 1.5;
+      /* 1 */
+      -webkit-text-size-adjust: 100%;
+      /* 2 */
+      -moz-tab-size: 4;
+      /* 3 */
+      tab-size: 4;
+      /* 3 */
+      font-family: theme('fontFamily.sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+      /* 4 */
+      font-feature-settings: theme('fontFamily.sans[1].fontFeatureSettings', normal);
+      /* 5 */
+      font-variation-settings: theme('fontFamily.sans[1].fontVariationSettings', normal);
+      /* 6 */
+    }
+
+    /*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+    body {
+      margin: 0;
+      /* 1 */
+      line-height: inherit;
+      /* 2 */
+    }
+
+    /*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+    hr {
+      height: 0;
+      /* 1 */
+      color: inherit;
+      /* 2 */
+      border-top-width: 1px;
+      /* 3 */
+    }
+
+    /*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+    abbr:where([title]) {
+      text-decoration: underline dotted;
+    }
+
+    /*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+    a {
+      color: inherit;
+      text-decoration: inherit;
+    }
+
+    /*
+Add the correct font weight in Edge and Safari.
+*/
+
+    b,
+    strong {
+      font-weight: bolder;
+    }
+
+    /*
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
+*/
+
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: theme('fontFamily.mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+      /* 1 */
+      font-size: 1em;
+      /* 2 */
+    }
+
+    /*
+Add the correct font size in all browsers.
+*/
+
+    small {
+      font-size: 80%;
+    }
+
+    /*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+
+    sub {
+      bottom: -0.25em;
+    }
+
+    sup {
+      top: -0.5em;
+    }
+
+    /*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+    table {
+      text-indent: 0;
+      /* 1 */
+      border-color: inherit;
+      /* 2 */
+      border-collapse: collapse;
+      /* 3 */
+    }
+
+    /*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font-family: inherit;
+      /* 1 */
+      font-feature-settings: inherit;
+      /* 1 */
+      font-variation-settings: inherit;
+      /* 1 */
+      font-size: 100%;
+      /* 1 */
+      font-weight: inherit;
+      /* 1 */
+      line-height: inherit;
+      /* 1 */
+      color: inherit;
+      /* 1 */
+      margin: 0;
+      /* 2 */
+      padding: 0;
+      /* 3 */
+    }
+
+    /*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+    button,
+    select {
+      text-transform: none;
+    }
+
+    /*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+    button,
+    [type='button'],
+    [type='reset'],
+    [type='submit'] {
+      -webkit-appearance: button;
+      /* 1 */
+      background-color: transparent;
+      /* 2 */
+      background-image: none;
+      /* 2 */
+    }
+
+    /*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+    :-moz-focusring {
+      outline: auto;
+    }
+
+    /*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+    :-moz-ui-invalid {
+      box-shadow: none;
+    }
+
+    /*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+    progress {
+      vertical-align: baseline;
+    }
+
+    /*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+      height: auto;
+    }
+
+    /*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+    [type='search'] {
+      -webkit-appearance: textfield;
+      /* 1 */
+      outline-offset: -2px;
+      /* 2 */
+    }
+
+    /*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+    ::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+
+    /*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+    ::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      /* 1 */
+      font: inherit;
+      /* 2 */
+    }
+
+    /*
+Add the correct display in Chrome and Safari.
+*/
+
+    summary {
+      display: list-item;
+    }
+
+    /*
+Removes the default spacing and border for appropriate elements.
+*/
+
+    blockquote,
+    dl,
+    dd,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    figure,
+    p,
+    pre {
+      margin: 0;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0;
+    }
+
+    legend {
+      padding: 0;
+    }
+
+    ol,
+    ul,
+    menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /*
+Reset default styling for dialogs.
+*/
+    dialog {
+      padding: 0;
+    }
+
+    /*
+Prevent resizing textareas horizontally by default.
+*/
+
+    textarea {
+      resize: vertical;
+    }
+
+    /*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+    input::placeholder,
+    textarea::placeholder {
+      opacity: 1;
+      /* 1 */
+      color: theme('colors.gray.400', #9ca3af);
+      /* 2 */
+    }
+
+    /*
+Set the default cursor for buttons.
+*/
+
+    button,
+    [role="button"] {
+      cursor: pointer;
+    }
+
+    /*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+    :disabled {
+      cursor: default;
+    }
+
+    /*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+      display: block;
+      /* 1 */
+      vertical-align: middle;
+      /* 2 */
+    }
+
+    /*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Make elements with the HTML hidden attribute stay hidden by default */
+    [hidden] {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+  <header>
+    <h1>Welcome to My Webpage</h1>
+
+    <div class="flex flex-row gap-2 mt-2 mb-2">
+      <style>
+        #listen:hover i {
+          color: white !important;
+        }
+
+        #share:hover i {
+          color: white !important;
+        }
+      </style>
+      <!--Listen-->
+      <div class="">
+        <button id='listen'
+          class="p-2 pt-1 pb-1 font-medium border border-[#990302]  text-[#990302] rounded-full transition ease-in-out delay-30 hover:bg-[#990302] hover:text-white notranslate"
+          onclick="readAloudStuff()">
+          <i id='play_btn' class="bi bi-play-circle" style="color:#990302"></i>
+          <span>Listen</span>
+        </button>
+      </div>
+
+
+      <!--Translate-->
+      <div class="relative inline-block text-left" class="notranslate">
+        <button id="translateButton"
+          class="translate_btn drp_btn p-2 pt-1 pb-1 border border-[#990302] font-medium text-[#990302] transition ease-in-out delay-30 hover:bg-[#990302] hover:text-white rounded-full notranslate">
+          <span>A文</span>
+        </button>
+        <ul
+          class="z-10 absolute hidden left-0 w-32 mt-2 origin-top-right bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg notranslate"
+          id="dropdown-menu"></ul>
+      </div>
+
+      <!--Share-->
+      <div class="relative inline-block text-left">
+        <button id="share"
+          class="share_btn drp_btn p-2 pt-1 pb-1 border border-[#990302] transition ease-in-out delay-30 hover:bg-[#990302] hover:text-white rounded-full">
+          <i id="share_btn" class="bi bi-share-fill" style="color:#990302"></i>
+        </button>
+        <ul
+          class="z-10 absolute hidden left-0 w-32 mt-2 origin-top-right bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg notranslate">
+          <li>
+            <a class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="copyPageUrl()">
+              <i id="copy-link-icon" class="bi bi-copy"></i>
+              <span id="copy-link-text">Copy Link</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-whatsapp"
+              class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="getWhatsappShare()">
+              <i class="bi bi-whatsapp"></i>
+              <span>Whatsapp</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-email" class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="getEmailShare()">
+              <i class="bi bi-envelope-fill"></i>
+              <span>Email</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-linkedin"
+              class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="getLinkedInShare()" target="_blank">
+              <i class="bi bi-linkedin"></i>
+              <span>Linkedin</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-facebook"
+              class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="getFacebookShare()" target="_blank">
+              <i class="bi bi-facebook"></i>
+              <span>Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-twitter" class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)" onclick="getTwitterShare()" target="_blank">
+              <i class="bi bi-twitter-x"></i>
+              <span>Twitter</span>
+            </a>
+          </li>
+          <li>
+            <a id="dropdown-more" class="block px-4 py-2 flex flex-row gap-2 text-sm text-gray-700 hover:bg-gray-100"
+              href="javascript:void(0)">
+              <i class="bi bi-three-dots"></i>
+              <span>More</span>
+            </a>
+          </li>
+          <!-- <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank"><img src="images/trash-2.svg" alt=""> Delete Website</a></li> -->
+        </ul>
+      </div>
+
+      <!--Summarize-->
+      <div class="notranslate">
+        <button id="summarizeButton"
+          class="hidden summarize_btn drp_btn p-2 pt-1 pb-1 border border-[#990302] font-medium text-[#990302] transition ease-in-out delay-30 hover:bg-[#990302] hover:text-white rounded-full notranslate">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-sparkles">
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" class="start-color" />
+                <stop offset="100%" class="end-color" />
+              </linearGradient>
+            </defs>
+            <path
+              d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            <path d="M5 3v4" />
+            <path d="M19 17v4" />
+            <path d="M3 5h4" />
+            <path d="M17 19h4" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="relative hidden p-6 pt-4 pb-4 mt-4 mb-4 bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg notranslate w-full"
+      id="summary-section">
+      <div>
+        <ul class="list-disc list-outside grid gap-2" id="summary-list">
+          <li>a</li>
+          <li>b</li>
+          <li>c</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="headline">
+      <font style="vertical-align: inherit;">
+        <font style="vertical-align: inherit;">
+          "Quotation marks": Q&A Nicky is Cool
+        </font>
+      </font>
+    </h2>
+    <h3 class="sub-headline">'Single quotation' Nicky is more cool</h3>
+    <article>
+      <p>Q&A Lorem ipsum dolor sit amet.</p>
+      <p><b>Is it more lorem ipsum?</b></p>
+      <p><b><i>Indeed, it is even more lorem ipsum!</i></b></p>
+      <p>
+        <font style="vertical-align: inherit;">
+          <font style="vertical-align: inherit;">
+            "Hey this is a font tag inside a paragraph"
+          </font>
+        </font>
+      </p>
+    </article>
+    <p>The beauty of nature has been a source of inspiration for many poets, artists, and musicians throughout history.
+      From the breathtaking landscapes of the Grand Canyon to the serene waters of a mountain lake, the natural world
+      has the power to evoke strong emotions in those who experience it. However, despite its undeniable beauty, nature
+      can also be incredibly cruel and unforgiving. Natural disasters such as earthquakes, hurricanes, and wildfires can
+      cause widespread devastation, destroying homes and taking lives. Despite its dangers, however, there is still
+      something undeniably alluring about nature and the great outdoors. Whether it is a leisurely hike through the
+      woods or a strenuous climb up a mountain peak, there is something about being in the great outdoors that makes us
+      feel truly alive. In the end, whether it is through art, music, or simply being in its presence, the beauty of
+      nature will continue to inspire and captivate us for generations to come.</p>
+  </main>
+  <footer>
+    <p>Copyright © 2023 My Webpage</p>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlPath = window.location.pathname;
+      var slug = urlPath.slice(1, -1); // Adjust this as per the URL format
+      slug = '2023/11/08/the-coliseum-one-of-the-most-electric-and-historic-stadiums-ive-got-the-chance-to-shine-in'
+      console.log(slug);
+
+      fetch('https://annenberg-media.github.io/summarized-data/data.json')
+        .then(response => response.json())
+        .then(data => {
+          if (data.hasOwnProperty(slug)) {
+            document.getElementById('summarizeButton').classList.remove('hidden');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    });
+  </script>
+  <script src="main-tw.js"></script>
+</body>
+
+</html>

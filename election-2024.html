@@ -1,0 +1,489 @@
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false
+            },
+            theme: {
+                extend: {
+                    colors: {
+                        'poll-blue': '#2C4FAE',
+                        'poll-red': '#BB2227'
+                    },
+                }
+            }
+        }
+        // module.exports = {
+            
+        // }
+    </script>
+</head>
+
+<body>
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container222 {
+            display: flex;
+            /* Enable flexbox */
+            justify-content: center;
+            /* Center the items horizontally */
+            align-items: center;
+            background-color: #182952;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            /* Center the items vertically */
+        }
+
+        .ehead1 {
+            width: 65%;
+            background-color: #182952;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            /* Center vertically */
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .ehead1 h1 {
+            font-size: 5rem;
+            font-weight: bolder;
+            color: #f5eadd;
+            line-height: 0.1rem;
+        }
+
+        .eside {
+            width: 35%;
+            background-color: #182952;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            /* Stack elements vertically */
+            align-items: center;
+            /* Center vertically */
+            justify-content: center;
+        }
+
+        .eside h3 {
+            font-size: 1.5vw;
+            color: #f5eadd;
+            white-space: nowrap;
+            line-height: 0.1rem;
+        }
+
+        .day-number {
+            color: #bb2227;
+            /* Color for the number values */
+        }
+
+        .day-label {
+            background-color: #bb2227;
+            padding: 0.2rem;
+        }
+
+        @media (max-width: 1023px) {
+            .container222 {
+                flex-direction: column;
+                /* Stack children vertically */
+            }
+
+            .ehead1,
+            .eside {
+                width: 100%;
+                /* Full width for smaller screens */
+            }
+
+            .ehead1 h1 {
+                font-size: 8vw;
+            }
+
+            .eside h3 {
+                font-size: 3vw;
+            }
+        }
+    </style>
+    <style>
+        @layer base {
+            html {
+                font-family: "Arial", system-ui, sans-serif;
+            }
+        }
+        .table {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+    </style>
+    <div class="container222">
+        <div class="ehead1">
+            <h1><span class="day-number">2024</span>
+                ELECTIONS
+            </h1>
+        </div>
+
+        <div class="eside">
+            <h3 id="daysUntilNov5">*** DAYS UNTIL 5TH NOVEMBER</h3>
+            <h3 id="daysUntilMarch5">*** DAYS UNTIL SUPER TUESDAY</h3>
+        </div>
+    </div>
+
+    <div class = "flex flex-wrap sm:space-y-2">
+        <div class = "w-full sm:w-2/4 text-center font-bold text-2xl text-poll-blue">
+            <span>Democratic</span>
+            <div id = "nat_dem_results">
+                <!-- 
+                    each candidate will be a w-full flexbox with no wrap
+                    half of the container will be for the visualization
+                    3/8 of the container will be for name
+                    1/8 of the container will be for number of votes
+                -->
+                <div class="w-full">
+                    <canvas id="nat_dem_graph"></canvas>
+                </div>
+    
+            </div>
+        </div>
+        
+        <div class = "w-full sm:w-2/4 text-center font-bold text-2xl text-poll-red">
+            <span>Republican</span>
+            <div id = "nat_rep_results">
+                <div class="w-full">
+                    <canvas id="nat_rep_graph"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+    <script>
+        function daysUntil(date) {
+            const now = new Date();
+            const targetDate = new Date(date);
+            const timeDiff = targetDate - now;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            return daysDiff;
+        }
+
+        function updateDaysText(elementId, date, eventDate) {
+            const days = daysUntil(date);
+            const dayText = days === 1 ? 'DAY' : 'DAYS';
+            document.getElementById(elementId).innerHTML = `<span class="day-number">${days}</span> ${dayText} UNTIL <span class="day-label">${eventDate}</span>`;
+        }
+
+        updateDaysText('daysUntilMarch5', 'March 5, 2024', 'SUPER TUESDAY');
+        updateDaysText('daysUntilNov5', 'November 5, 2024', '5TH NOVEMBER');
+    </script>
+
+    <!-- Graph element -->
+    <script>
+
+        var polling_json;
+        var nat_rep_results = new Map();
+        var nat_dem_results = new Map();
+        var ca_rep_results = new Map();
+        var ca_dem_results = new Map();
+    
+        var nat_rep_results_names = [];
+        var nat_dem_results_names = [];
+        var ca_rep_results_names = [];
+        var ca_dem_results_names = [];
+        var nat_rep_results_votes = [];
+        var nat_dem_results_votes = [];
+        var ca_rep_results_votes = [];
+        var ca_dem_results_votes = [];
+        var nat_rep_graph_labels = [];
+        var nat_dem_graph_labels = [];
+
+        var win_nom_dem = 0;
+        var win_nom_rep = 0;
+    
+        // Make a fetch request to the server
+        /*
+        fetch('https://www.nbcnews.com/firecracker/api/v2/national-results/2024-primary-elections/delegate-tracker')
+        .then(response => {
+            // Check if the response has JSON content type in its header
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+            // If the content type is JSON, extract JSON data from the response header
+            const jsonData = JSON.parse(response.headers.get('json-data'));
+            // console.log(jsonData); // Do whatever you want with the JSON data
+            polling_json = jsonData;
+            console.log(polling_json);
+            } else {
+            console.error('Response is not in JSON format');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+        */
+    
+    // Make a fetch request to load the JSON file
+        fetch('delegate-tracker.json')
+        .then(response => {
+            // Parse the JSON response
+            return response.json();
+        })
+        .then(data => {
+            // Do something with the parsed JSON data
+            polling_json = data;
+            console.log(polling_json);
+            console.log("polling_json ^^^^^");
+    
+            // nationwide_republican_delegates
+            let rep_candidates = polling_json.nationalDelegates.rep.candidates; // array of rep_candidates with dictionaries of their info
+            for (let i = 0; i < rep_candidates.length; i++) {
+                nat_rep_results.set(rep_candidates[i].lastName, rep_candidates[i].allDelegatesAwarded);
+                nat_rep_results_names.push(rep_candidates[i].lastName);
+                nat_rep_results_votes.push(rep_candidates[i].allDelegatesAwarded);
+            }
+
+            win_nom_dem = polling_json.nationalDelegates.dem.delegatesNeeded;
+            win_nom_rep = polling_json.nationalDelegates.rep.delegatesNeeded;
+
+            // console.log("nat_rep_results " + nat_rep_results.get("Trump"));
+    
+            // nationwide_democratic_delegates
+            let dem_candidates = polling_json.nationalDelegates.dem.candidates; // array of dem_candidates with dictionaries of their info
+            for (let i = 0; i < dem_candidates.length; i++) {
+                nat_dem_results.set(dem_candidates[i].lastName, dem_candidates[i].allDelegatesAwarded);
+                nat_dem_results_names.push(dem_candidates[i].lastName);
+                nat_dem_results_votes.push(dem_candidates[i].allDelegatesAwarded);
+            }
+            // console.log("nat_dem_results " + nat_dem_results.get("Biden"));
+    
+            // ca_republican_delegates
+            // changing 5 to 37 as of now to get nevada results
+            let ca_rep_candidates = polling_json.stateDelegates.rep.races[37].candidateResultsByLastName;
+            for (var candidate in ca_rep_candidates) {
+                ca_rep_results.set(ca_rep_candidates[candidate].firstName, ca_rep_candidates[candidate].allDelegatesAwarded);
+                ca_rep_results_names.push(ca_rep_candidates[candidate].lastName);
+                ca_rep_results_votes.push(ca_rep_candidates[candidate].allDelegatesAwarded);
+            }
+            // console.log("ca_rep_results " + ca_rep_results.get("Trump"));
+    
+            
+            // ca_democratic_delegates
+            let ca_dem_candidates = polling_json.stateDelegates.dem.races[37].candidateResultsByLastName;
+            for (var candidate in ca_dem_candidates) {
+                ca_dem_results.set(ca_dem_candidates[candidate].lastName, ca_dem_candidates[candidate].allDelegatesAwarded);
+                ca_dem_results_names.push(ca_dem_candidates[candidate].lastName);
+                ca_dem_results_votes.push(ca_dem_candidates[candidate].allDelegatesAwarded);
+            }
+            // console.log("ca_dem_results " + ca_dem_results.get("Biden"));
+    
+            // have the same number of data points
+            var extra = nat_rep_results_votes.length - nat_dem_results_votes.length;
+            while (extra > 0) {
+                nat_dem_results_votes.push(0);
+                extra--;
+            } 
+            while (extra < 0) {
+                nat_rep_results_votes.push(0);
+                extra++;
+            }
+    
+            // sort the two bar charts using selection sort
+            var max_i;
+            for (i = 0; i < nat_dem_results_votes.length; i++) {
+                if (nat_dem_results_votes[i] == 0) {
+                    nat_dem_graph_labels.push('');
+                    continue;
+                }
+                max_i = i;
+                for (j = i+1; j < nat_dem_results_votes.length; j++) {
+                    if (nat_dem_results_votes[j] == 0) {
+                        continue;
+                    }
+                    if (nat_dem_results_votes[j] > nat_dem_results_votes[max_i]) {
+                        max_i = j;
+                    }
+                }
+    
+                if (max_i != i) {
+                    swap(nat_dem_results_votes, max_i, i);
+                }
+                nat_dem_graph_labels.push(nat_dem_results_names[max_i] + " – " + nat_dem_results_votes[max_i]);
+            }
+    
+            var max_i;
+            for (i = 0; i < nat_rep_results_votes.length; i++) {
+                if (nat_rep_results_votes[i] == 0) {
+                    nat_rep_graph_labels.push('');
+                    continue;
+                }
+                max_i = i;
+                for (j = i+1; j < nat_rep_results_votes.length; j++) {
+                    if (nat_rep_results_votes[j] == 0) {
+                        continue;
+                    }
+                    if (nat_rep_results_votes[j] > nat_rep_results_votes[max_i]) {
+                        max_i = j;
+                    }
+                }
+    
+                if (max_i != i) {
+                    swap(nat_rep_results_votes, max_i, i);
+                }
+                nat_rep_graph_labels.push(nat_rep_results_names[max_i] + " – " + nat_rep_results_votes[max_i]);
+            }
+    
+    
+            const nat_dem_graph_data = {
+                labels: nat_dem_graph_labels, // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'], //
+                datasets: [{
+                    axis: 'y',
+                    label: 'Delegates',
+                    data: nat_dem_results_votes, // [12, 19, 3, 5, 2, 3],// 
+                    backgroundColor: [
+                    '#000085',
+                    '#2C6DEF',
+                    ],
+                }]
+            };
+    
+            const nat_rep_graph_data = {
+                labels: nat_rep_graph_labels, 
+                datasets: [{
+                    axis: 'y',
+                    label: 'Delegates',
+                    data: nat_rep_results_votes , 
+                    fill: true,
+                    backgroundColor: [
+                    //'#4E0B0D',
+                    '#7F090A',
+                    '#B31110',
+                    //'#992F2F',
+                    //'#EF4546',
+                    '#FF7474',
+                    '#FFAFAE',
+                    ]
+                }]
+            };
+    
+            new Chart(document.getElementById('nat_dem_graph'), {
+                type: 'bar',
+                data: nat_dem_graph_data,
+                options: {
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                drawBorder: true,
+                                display: true,
+                                drawOnChartArea: true
+                            },
+                            border: {
+                                display: false
+                            },
+                            beginAtZero:true,
+                            max:win_nom_dem,
+                            ticks: {
+                                callback: function(value) {
+                                    // Only show 0 and 1215
+                                    if (value === 0 || value === win_nom_dem) {
+                                        return value;
+                                    }
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                display: false,
+                                drawOnChartArea: false
+                            },
+                            border: {
+                                display: false
+                            },
+                            
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                        display: false
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio:false,
+                }
+            });
+    
+            new Chart(document.getElementById('nat_rep_graph'), {
+                type: 'bar',
+                data: nat_rep_graph_data,
+                options: {
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                drawBorder: true,
+                                display: true,
+                                drawOnChartArea: true
+                            },
+                            border: {
+                                display: false
+                            },
+                            beginAtZero:true,
+                            max:win_nom_rep,
+                            ticks: {
+                                callback: function(value) {
+                                    // Only show 0 and 1215
+                                    if (value === 0 || value === win_nom_rep) {
+                                        return value;
+                                    }
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                display: false,
+                                drawOnChartArea: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                        display: false
+                        }
+                    },
+                    responsive:true,
+                    maintainAspectRatio:false
+                }
+            });
+
+            // Initial resize
+        resizeCanvas();
+    
+        })
+        .catch(error => {
+            console.error('Error loading the JSON file:', error);
+        });
+    
+    
+        //const ctx = document.getElementById('myChart');
+    
+        // new Chart(ctix, {
+        //     type: 'bar',
+        //     chart_data,
+        //     options: {
+        //         indexAxis: 'y',
+        //     }
+        // });
+    
+    </script>
+</body>
+
+</html>

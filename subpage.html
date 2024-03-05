@@ -21,14 +21,14 @@
       <!--Listen-->
       <button id='listen' type="button" class="btn btn-outline-danger notranslate" onclick="readAloudStuff()">
         <i id='play_btn' class="bi bi-play-circle" style="color:#990302"></i>
-        Listen to this article
+        <b>Listen</b>
       </button>
 
       <!--Translate-->
       <div class="btn-group" class="notranslate">
         <button type="button" id="translateButton" class="btn btn-outline-danger dropdown-toggle notranslate"
           data-bs-toggle="dropdown" aria-expanded="false">
-          Translate
+          A文
         </button>
         <ul class="dropdown-menu" id="dropdown-menu"></ul>
       </div>
@@ -36,8 +36,9 @@
       <!--Share-->
       <div class="btn-group" id="myDropdown">
         <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          <i id="share_btn" class="bi bi-share-fill" style="color:#990302"></i>
+          aria-expanded="false"
+          style=".caret-off::before{display:none !important;} .caret-off::after{display:none !important;}">
+          <i id="share_btn" class="bi bi-arrow-up-right-circle" style="color:#990302"></i>
         </button>
         <ul class="dropdown-menu notranslate">
           <li><a class="dropdown-item" href="javascript:void(0)" onclick="copyPageUrl()"><i
