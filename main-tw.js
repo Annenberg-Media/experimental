@@ -290,6 +290,8 @@ let isTypingEffectInitiated = false;
 document.querySelector('.summarize_btn').addEventListener('click', function (event) {
   var hiddenCard = document.getElementById('summary-section');
   var ulElement = document.getElementById("summary-list");
+  var sourceSpan = document.getElementById('source-list'); // Select the source span
+
 
 
   if (hiddenCard.classList.contains('hidden')) {
@@ -310,6 +312,10 @@ document.querySelector('.summarize_btn').addEventListener('click', function (eve
         var objectForKey = data[key];
         if (objectForKey && !isTypingEffectInitiated) {
           var summaryArray = objectForKey.summary;
+          var sourceList = objectForKey.attrDetails.sourceList.join(', ');
+          sourceSpan.textContent = 'Summary by ' + sourceList + '.'; // Append sources to the span
+
+
           isTypingEffectInitiated = true; // Set the flag to true
 
           // Function to simulate typing effect
